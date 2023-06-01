@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model relationships {
+  id                                    Int       @id @default(autoincrement())
+  followerId                            Int
+  followedId                            Int
+  createdAt                             DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt                             DateTime? @db.Timestamp(6)
+  users_relationships_followedIdTousers users     @relation("relationships_followedIdTousers", fields: [followedId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_relationships_followerIdTousers users     @relation("relationships_followerIdTousers", fields: [followerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model posts {
+  id        Int       @id @default(autoincrement())
+  content   String    @db.VarChar
+  userId    Int
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime? @db.Timestamp(6)
+  users     users     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model users {
+  id                                            Int             @id @default(autoincrement())
+  name                                          String          @db.VarChar
+  email                                         String          @unique @db.VarChar
+  password                                      String          @db.VarChar
+  createdAt                                     DateTime        @default(now()) @db.Timestamp(6)
+  updatedAt                                     DateTime?       @db.Timestamp(6)
+  pfp                                           String          @default("https://pbs.twimg.com/media/FRynXImUcAAGFWk?format=png&name=360x360") @db.VarChar
+  relationships_relationships_followedIdTousers relationships[] @relation("relationships_followedIdTousers")
+  relationships_relationships_followerIdTousers relationships[] @relation("relationships_followerIdTousers")
+  posts                                         posts[]
+}
