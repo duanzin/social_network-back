@@ -2,7 +2,7 @@ import { CreateUserParams } from "../protocols/authProtocols";
 import { prisma } from "../config/database";
 
 async function findByEmail(email: string) {
-  const user = await prisma.users.findFirst({
+  const user = await prisma.users.findUnique({
     where: {
       email,
     },
@@ -12,7 +12,7 @@ async function findByEmail(email: string) {
 }
 
 async function create(data: CreateUserParams) {
-  return await prisma.users.create({
+  await prisma.users.create({
     data,
   });
 }

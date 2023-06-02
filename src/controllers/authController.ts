@@ -4,8 +4,8 @@ import authService from "../services/authServices";
 
 async function signUp(req: Request, res: Response, next: NextFunction) {
   try {
-    const { id } = await authService.createUser(req.body);
-    res.status(httpStatus.CREATED).send({id});
+    await authService.createUser(req.body);
+    res.sendStatus(httpStatus.CREATED);
   } catch (error) {
     next(error);
   }
