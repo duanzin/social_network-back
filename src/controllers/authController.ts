@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
-import authService from "../services/authServices";
+import authService from "../services/authService";
 
 async function signUp(req: Request, res: Response, next: NextFunction) {
   try {

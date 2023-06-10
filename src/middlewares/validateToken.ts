@@ -1,6 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
 import { unauthorizedError } from "../errors/index";
+import userRepository from "../repositories/userRepository";
+
+interface JwtPayload {
+  id: number
+}
 
 export async function validateToken(
   req: Request,
@@ -16,13 +21,11 @@ export async function validateToken(
   const [schema, token] = parts;
   if (schema !== "Bearer") throw unauthorizedError();
 
-  jwt.verify(token, process.env.JWT_SECRET, async (error, decoded) => {
+  jwt.verify(token, process.env.JWT_SECRET, async (error, decoded: JwtPayload) => {
     try {
       if (error !== null) throw unauthorizedError();
 
-      const {
-        rows: [user],
-      } = await userRepository.findById(decoded.id);
+      const user = await userRepository.findById(decoded.id);
 
       if (!user) throw unauthorizedError();
 

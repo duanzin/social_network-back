@@ -17,9 +17,7 @@ async function create(data: CreateUserParams) {
   });
 }
 
-const authRepository = {
+export default {
   findByEmail,
   create,
 };
-
-export default authRepository;
