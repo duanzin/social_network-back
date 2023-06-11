@@ -1,5 +1,5 @@
 import Joi from "joi";
 
 export const postSchema = Joi.object({
-  text: Joi.string().max(280).required(),
+  content: Joi.string().max(150).required(),
 });

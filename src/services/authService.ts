@@ -23,7 +23,7 @@ async function login({ email, password }: SigninParams): Promise<string> {
   const correctPassword = await bcrypt.compare(password, user.password);
   if (!correctPassword) throw invalidCredentialsError();
   const id: number = user.id;
-  const token: string = jwt.sign({ id }, process.env.JWT_SECRET);
+  const token: string = jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: 1800 });
 
   return token;
 }

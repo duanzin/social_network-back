@@ -4,7 +4,7 @@ import { notFoundError } from "../errors/index";
 import { posts } from "@prisma/client";
 
 async function getPostsFromAll(): Promise<posts[]> {
-    return await postsRepository.getAll();
+  return await postsRepository.getAll();
 }
 
 async function getPostsFromUser(id: number): Promise<posts[]> {
@@ -14,11 +14,11 @@ async function getPostsFromUser(id: number): Promise<posts[]> {
 }
 
 async function createPost(id: number, content: string) {
-    await postsRepository.create(id, content);
+  await postsRepository.create(id, content);
 }
 
 export default {
-    getPostsFromAll,
-    getPostsFromUser,
-    createPost
-  };
+  getPostsFromAll,
+  getPostsFromUser,
+  createPost,
+};

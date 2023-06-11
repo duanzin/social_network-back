@@ -20,7 +20,6 @@ export async function validateToken(
 
   const [schema, token] = parts;
   if (schema !== "Bearer") throw unauthorizedError();
-
   jwt.verify(token, process.env.JWT_SECRET, async (error, decoded: JwtPayload) => {
     try {
       if (error !== null) throw unauthorizedError();
@@ -29,7 +28,7 @@ export async function validateToken(
 
       if (!user) throw unauthorizedError();
 
-      res.locals.user = user;
+      res.locals.user = user.id;
       next();
     } catch (err) {
       next(err);

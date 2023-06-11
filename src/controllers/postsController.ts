@@ -23,7 +23,7 @@ async function getAllPosts(req: Request, res: Response, next: NextFunction) {
   
   async function createPost(req: Request, res: Response, next: NextFunction) {
     try {
-      await postsService.createPost(res.locals.user, req.body);
+      await postsService.createPost(res.locals.user, req.body.content);
       res.sendStatus(httpStatus.CREATED);
     } catch (error) {
       next(error);
