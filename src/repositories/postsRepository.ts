@@ -1,13 +1,36 @@
 import { prisma } from "../config/database";
 
 async function getAll() {
-  return await prisma.posts.findMany();
+  return await prisma.posts.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      users: {
+        select: {
+          pfp: true,
+          name: true,
+        },
+      },
+    },
+  });
 }
 
 async function getFromUser(id: number) {
   return await prisma.posts.findMany({
     where: {
       userId: id,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      users: {
+        select: {
+          pfp: true,
+          name: true,
+        },
+      },
     },
   });
 }
@@ -24,5 +47,5 @@ async function create(id: number, content: string) {
 export default {
   getAll,
   getFromUser,
-  create
+  create,
 };

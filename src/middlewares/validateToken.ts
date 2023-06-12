@@ -4,7 +4,7 @@ import { unauthorizedError } from "../errors/index";
 import userRepository from "../repositories/userRepository";
 
 interface JwtPayload {
-  id: number
+  id: number;
 }
 
 export async function validateToken(
@@ -20,18 +20,22 @@ export async function validateToken(
 
   const [schema, token] = parts;
   if (schema !== "Bearer") throw unauthorizedError();
-  jwt.verify(token, process.env.JWT_SECRET, async (error, decoded: JwtPayload) => {
-    try {
-      if (error !== null) throw unauthorizedError();
+  jwt.verify(
+    token,
+    process.env.JWT_SECRET,
+    async (error, decoded: JwtPayload) => {
+      try {
+        if (error !== null) throw unauthorizedError();
 
-      const user = await userRepository.findById(decoded.id);
+        const user = await userRepository.findById(decoded.id);
 
-      if (!user) throw unauthorizedError();
+        if (!user) throw unauthorizedError();
 
-      res.locals.user = user.id;
-      next();
-    } catch (err) {
-      next(err);
+        res.locals.user = user.id;
+        next();
+      } catch (err) {
+        next(err);
+      }
     }
-  });
+  );
 }
