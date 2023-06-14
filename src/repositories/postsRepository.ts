@@ -8,6 +8,7 @@ async function getAll() {
     include: {
       users: {
         select: {
+          id: true,
           pfp: true,
           name: true,
         },
@@ -27,6 +28,7 @@ async function getFromUser(id: number) {
     include: {
       users: {
         select: {
+          id: true,
           pfp: true,
           name: true,
         },
