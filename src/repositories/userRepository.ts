@@ -5,6 +5,27 @@ async function findById(id: number) {
     where: {
       id,
     },
+    select: {
+      id: true,
+      name: true,
+      createdAt: true,
+      updatedAt: true,
+      pfp: true,
+    },
+  });
+
+  return user;
+}
+
+async function findAll() {
+  const user = await prisma.users.findMany({
+    select: {
+      id: true,
+      name: true,
+      createdAt: true,
+      updatedAt: true,
+      pfp: true,
+    },
   });
 
   return user;
@@ -12,6 +33,7 @@ async function findById(id: number) {
 
 const userRepository = {
   findById,
+  findAll
 };
 
 export default userRepository;
