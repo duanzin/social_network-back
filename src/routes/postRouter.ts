@@ -7,6 +7,7 @@ import { postSchema } from "../schemas/postSchema";
 const postRouter = Router();
 
 postRouter.use(validateToken);
+postRouter.get("/followed", postsController.getPostsFromFollowed);
 postRouter.get("/:id?", postsController.getPosts);
 postRouter.post("/", validateSchema(postSchema), postsController.createPost);
 

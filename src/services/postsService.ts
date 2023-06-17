@@ -13,6 +13,12 @@ async function getPostsFromUser(id: number): Promise<posts[]> {
   return await postsRepository.getFromUser(id);
 }
 
+async function getFromFollowed(id: number): Promise<posts[]> {
+  const following = await userRepository.findFollowing(id);
+  const followedIds = following.map((relationship) => relationship.followedId);
+  return await postsRepository.getFromFollowed(followedIds);
+}
+
 async function createPost(id: number, content: string) {
   await postsRepository.create(id, content);
 }
@@ -20,5 +26,6 @@ async function createPost(id: number, content: string) {
 export default {
   getPostsFromAll,
   getPostsFromUser,
+  getFromFollowed,
   createPost,
 };

@@ -37,6 +37,28 @@ async function getFromUser(id: number) {
   });
 }
 
+async function getFromFollowed(following: number[]) {
+  return await prisma.posts.findMany({
+    where: {
+      userId: {
+        in: following,
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      users: {
+        select: {
+          id: true,
+          pfp: true,
+          name: true,
+        },
+      },
+    },
+  });
+}
+
 async function create(id: number, content: string) {
   await prisma.posts.create({
     data: {
@@ -49,5 +71,6 @@ async function create(id: number, content: string) {
 export default {
   getAll,
   getFromUser,
+  getFromFollowed,
   create,
 };

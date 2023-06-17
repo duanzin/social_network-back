@@ -1,9 +1,9 @@
 import { prisma } from "../config/database";
 
-async function findById(id: number) {
+async function findById(userId: number) {
   const user = await prisma.users.findUnique({
     where: {
-      id,
+      id: userId,
     },
     select: {
       id: true,
@@ -17,7 +17,7 @@ async function findById(id: number) {
   return user;
 }
 
-async function findAll() {
+async function findAllUsers() {
   const user = await prisma.users.findMany({
     select: {
       id: true,
@@ -31,6 +31,22 @@ async function findAll() {
   return user;
 }
 
+async function findAllRelationships(userId: number) {
+  return await prisma.relationships.findMany({
+    where: {
+      OR: [{ followedId: userId }, { followerId: userId }],
+    },
+  });
+}
+
+async function findFollowing(userId: number) {
+  return await prisma.relationships.findMany({
+    where: {
+      followerId: userId,
+    },
+  });
+}
+
 async function findRelationship(followerId: number, followedId: number) {
   return await prisma.relationships.findFirst({
     where: {
@@ -39,6 +55,7 @@ async function findRelationship(followerId: number, followedId: number) {
     },
   });
 }
+
 async function unfollow(id: number) {
   await prisma.relationships.delete({
     where: {
@@ -47,7 +64,7 @@ async function unfollow(id: number) {
   });
 }
 async function follow(followerId: number, followedId: number) {
-  await prisma.relationships.create({
+  return await prisma.relationships.create({
     data: {
       followerId,
       followedId,
@@ -57,8 +74,10 @@ async function follow(followerId: number, followedId: number) {
 
 const userRepository = {
   findById,
-  findAll,
+  findAllUsers,
   findRelationship,
+  findAllRelationships,
+  findFollowing,
   unfollow,
   follow,
 };

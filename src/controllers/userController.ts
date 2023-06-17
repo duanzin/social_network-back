@@ -2,12 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 import { UserParams } from "../protocols/userProtocols";
 import userService from "../services/userService";
+import userRepository from "../repositories/userRepository";
 
 async function getUser(req: Request, res: Response, next: NextFunction) {
   try {
-    let id: number = res.locals.user;
-    if (req.params.id) id = parseInt(req.params.id);
-    const user: UserParams = await userService.getUser(id);
+    const user: UserParams = await userService.getUser(
+      req.params.id !== undefined ? parseInt(req.params.id) : res.locals.user
+    );
     res.status(httpStatus.OK).send(user);
   } catch (error) {
     next(error);
@@ -16,7 +17,7 @@ async function getUser(req: Request, res: Response, next: NextFunction) {
 
 async function getAllUsers(req: Request, res: Response, next: NextFunction) {
   try {
-    const users: UserParams[] = await userService.getAllUsers();
+    const users = await userService.getAllUsers();
     res.status(httpStatus.OK).send(users);
   } catch (error) {
     next(error);
@@ -29,8 +30,26 @@ async function handleRelationship(
   next: NextFunction
 ) {
   try {
-    await userService.followOrUnfollow(res.locals.user, req.body.id);
-    res.status(httpStatus.OK);
+    const relationship = await userService.followOrUnfollow(res.locals.user, parseInt(req.body.id));
+    res.status(httpStatus.OK).send({relationship: relationship});
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getRelationship(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const followedId: number = parseInt(req.params.id);
+    const relationship = await userRepository.findRelationship(
+      res.locals.user,
+      followedId
+    );
+    if (relationship) res.status(httpStatus.OK).send({relationship: relationship.id});
+    res.status(httpStatus.OK).send(null);
   } catch (error) {
     next(error);
   }
@@ -40,4 +59,5 @@ export default {
   getAllUsers,
   getUser,
   handleRelationship,
+  getRelationship,
 };
