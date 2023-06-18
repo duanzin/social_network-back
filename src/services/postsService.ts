@@ -2,6 +2,7 @@ import userRepository from "../repositories/userRepository";
 import postsRepository from "../repositories/postsRepository";
 import { notFoundError } from "../errors/index";
 import { posts } from "@prisma/client";
+import relationshipRepository from "../repositories/relationshipRepository";
 
 async function getPostsFromAll(): Promise<posts[]> {
   return await postsRepository.getAll();
@@ -14,7 +15,7 @@ async function getPostsFromUser(id: number): Promise<posts[]> {
 }
 
 async function getFromFollowed(id: number): Promise<posts[]> {
-  const following = await userRepository.findFollowing(id);
+  const following = await relationshipRepository.findFollowing(id);
   const followedIds = following.map((relationship) => relationship.followedId);
   return await postsRepository.getFromFollowed(followedIds);
 }

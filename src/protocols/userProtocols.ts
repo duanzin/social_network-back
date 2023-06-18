@@ -1,5 +1,7 @@
-import { users, relationships } from "@prisma/client";
+import { users } from "@prisma/client";
 
 export type UserParams = Omit<users, "password" | "email"> & {
-  relationships: relationships[];
+  profileOwner: boolean;
+  followers: number;
+  following: number;
 };
