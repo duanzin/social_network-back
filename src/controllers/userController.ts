@@ -26,44 +26,7 @@ async function getAllUsers(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-async function handleRelationship(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const relationship = await userService.followOrUnfollow(
-      res.locals.user,
-      parseInt(req.body.id)
-    );
-    res.status(httpStatus.OK).send({ relationship: relationship });
-  } catch (error) {
-    next(error);
-  }
-}
-
-async function getRelationship(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const followedId: number = parseInt(req.params.id);
-    const relationship = await relationshipRepository.findRelationship(
-      res.locals.user,
-      followedId
-    );
-    if (relationship)
-      res.status(httpStatus.OK).send({ relationship: relationship.id });
-    res.status(httpStatus.OK).send(null);
-  } catch (error) {
-    next(error);
-  }
-}
-
 export default {
   getAllUsers,
   getUser,
-  handleRelationship,
-  getRelationship,
 };
