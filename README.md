@@ -14,6 +14,11 @@ After than, run the migrations
 npm run dev:migration:run
 npm run test:migration:run
 ```
+
+if the seed doesnt run automatically, use the following command
+```
+npm run dev:seed
+```
 ## Running the project
 
 To start the code, run the following command
