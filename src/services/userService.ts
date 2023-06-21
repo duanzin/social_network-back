@@ -11,7 +11,7 @@ async function getUser(profileId: number): Promise<UserParams> {
   ).length;
   const following: number = (
     await relationshipRepository.findFollowing(profileId)
-  ).length;
+  ).length - 1;
   const { id, name, createdAt, updatedAt, pfp } = user;
   const userWithRelationships = {
     id,

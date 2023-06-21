@@ -13,7 +13,6 @@ async function findFollowing(userId: number) {
   return await prisma.relationships.findMany({
     where: {
       followerId: userId,
-      followedId: { not: userId },
     },
   });
 }
@@ -34,6 +33,7 @@ async function unfollow(id: number) {
     },
   });
 }
+
 async function follow(followerId: number, followedId: number) {
   return await prisma.relationships.create({
     data: {

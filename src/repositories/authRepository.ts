@@ -12,9 +12,11 @@ async function findByEmail(email: string) {
 }
 
 async function create(data: CreateUserParams) {
-  await prisma.users.create({
+  const { id } = await prisma.users.create({
     data,
   });
+
+  return id;
 }
 
 export default {
