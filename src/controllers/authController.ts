@@ -14,7 +14,7 @@ async function signUp(req: Request, res: Response, next: NextFunction) {
 async function signIn(req: Request, res: Response, next: NextFunction) {
   try {
     const token = await authService.login(req.body);
-    res.status(httpStatus.OK).send(token);
+    res.status(httpStatus.OK).send({ token: token });
   } catch (error) {
     next(error);
   }
