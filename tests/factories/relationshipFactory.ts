@@ -1,6 +1,6 @@
+import { prisma } from "../../src/config/database";
 import { faker } from "@faker-js/faker";
 import { relationships } from "@prisma/client";
-import { prisma } from "../../src/config/database";
 
 export async function createRelationship(
   followerId: number,

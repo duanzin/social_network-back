@@ -12,30 +12,30 @@ export async function validateToken(
   res: Response,
   next: NextFunction
 ) {
-  const { authorization } = req.headers;
-  if (!authorization) throw unauthorizedError();
+  try {
+    const authorization = req.headers.authorization;
+    if (!authorization) throw unauthorizedError();
+    const parts: string[] = authorization.split(" ");
+    if (parts.length !== 2) throw unauthorizedError();
 
-  const parts: string[] = authorization.split(" ");
-  if (parts.length !== 2) throw unauthorizedError();
+    const [schema, token] = parts;
+    if (schema !== "Bearer") throw unauthorizedError();
 
-  const [schema, token] = parts;
-  if (schema !== "Bearer") throw unauthorizedError();
-  jwt.verify(
-    token,
-    process.env.JWT_SECRET,
-    async (error, decoded: JwtPayload) => {
-      try {
-        if (error !== null) throw unauthorizedError();
-
-        const user = await userRepository.findById(decoded.id);
-
-        if (!user) throw unauthorizedError();
-
-        res.locals.user = user.id;
-        next();
-      } catch (err) {
-        next(err);
-      }
+    let decoded;
+    try {
+      decoded = (await jwt.verify(token, process.env.JWT_SECRET)) as JwtPayload;
+    } catch (error) {
+      throw unauthorizedError();
     }
-  );
+
+    if (!decoded.id || isNaN(decoded.id)) throw unauthorizedError();
+
+    const user = await userRepository.findById(decoded.id);
+    if (!user) throw unauthorizedError();
+
+    res.locals.user = user.id;
+    next();
+  } catch (err) {
+    next(err);
+  }
 }

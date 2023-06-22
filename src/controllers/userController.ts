@@ -2,15 +2,20 @@ import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 import { UserParams } from "../protocols/userProtocols";
 import userService from "../services/userService";
-import relationshipRepository from "../repositories/relationshipRepository";
+import { badRequestError } from "errors";
 
 async function getUser(req: Request, res: Response, next: NextFunction) {
   try {
+    if (req.params.id !== undefined && isNaN(parseInt(req.params.id)))
+      throw badRequestError();
+
     const user: UserParams = await userService.getUser(
       req.params.id !== undefined ? parseInt(req.params.id) : res.locals.user
     );
+
     if (!req.params.id || parseInt(req.params.id) === res.locals.user)
       user.profileOwner = true;
+
     res.status(httpStatus.OK).send(user);
   } catch (error) {
     next(error);
