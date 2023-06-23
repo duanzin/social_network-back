@@ -1,18 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 import postsService from "../services/postsService";
+import { badRequestError } from "../errors/index";
 
 async function getPosts(req: Request, res: Response, next: NextFunction) {
   try {
-    if (req.params.id) {
-      const posts = await postsService.getPostsFromUser(
-        parseInt(req.params.id)
-      );
-      res.status(httpStatus.OK).send(posts);
+    let posts;
+    if (req.params.id !== undefined) {
+      if (isNaN(parseInt(req.params.id))) throw badRequestError();
+      posts = await postsService.getPostsFromUser(parseInt(req.params.id));
     } else {
-      const posts = await postsService.getPostsFromAll();
-      res.status(httpStatus.OK).send(posts);
+      posts = await postsService.getPostsFromAll();
     }
+    res.status(httpStatus.OK).send(posts);
   } catch (error) {
     next(error);
   }

@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 import { UserParams } from "../protocols/userProtocols";
 import userService from "../services/userService";
-import { badRequestError } from "errors";
+import { badRequestError } from "../errors/index";
 
 async function getUser(req: Request, res: Response, next: NextFunction) {
   try {

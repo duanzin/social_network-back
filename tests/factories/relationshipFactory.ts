@@ -1,15 +1,23 @@
 import { prisma } from "../../src/config/database";
-import { faker } from "@faker-js/faker";
 import { relationships } from "@prisma/client";
+import { createUser } from "./userFactory";
 
 export async function createRelationship(
-  followerId: number,
-  followedId: number
+  followerId: number = null,
+  followedId: number = null
 ): Promise<relationships> {
+  if (followerId === null) {
+    const { id } = await createUser();
+    followerId = id;
+  }
+  if (followedId === null) {
+    const { id } = await createUser();
+    followedId = id;
+  }
   return prisma.relationships.create({
     data: {
-      followerId: followerId || faker.number.int(),
-      followedId: followedId || faker.number.int(),
+      followerId: followerId,
+      followedId: followedId,
     },
   });
 }
