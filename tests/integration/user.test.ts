@@ -12,6 +12,58 @@ beforeAll(async () => {
 
 const server = supertest(app);
 
+describe("GET /user/all", () => {
+  it("should respond with status 401 if no token is given", async () => {
+    const response = await server.get("/user/all");
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if given token is not valid", async () => {
+    const token = faker.lorem.word();
+
+    const response = await server
+      .get("/user/all")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  describe("when token is valid", () => {
+    it("should respond with status 200 and empty array when no users are found", async () => {
+      const token = await generateValidToken();
+
+      const response = await server
+        .get("/user/all")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.OK);
+      expect(response.body).toEqual([]);
+    });
+    it("should respond with status 200 and array of users", async () => {
+      await createUser();
+      const token = await generateValidToken();
+
+      const response = await server
+        .get("/user/all")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.OK);
+      expect(response.body).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.any(Number),
+            name: expect.any(String),
+            pfp: expect.any(String),
+            createdAt: expect.any(String),
+            updatedAt: null,
+          }),
+        ])
+      );
+    });
+  });
+});
+
 describe("GET /user/:id?", () => {
   it("should respond with status 401 if no token is given", async () => {
     const response = await server.get("/user");
@@ -89,48 +141,6 @@ describe("GET /user/:id?", () => {
           updatedAt: user.updatedAt,
         });
       });
-    });
-  });
-});
-
-describe("GET /user/all", () => {
-  it("should respond with status 401 if no token is given", async () => {
-    const response = await server.get("/user/all");
-
-    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
-  });
-
-  it("should respond with status 401 if given token is not valid", async () => {
-    const token = faker.lorem.word();
-
-    const response = await server
-      .get("/user/all")
-      .set("Authorization", `Bearer ${token}`);
-
-    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
-  });
-
-  describe("when token is valid", () => {
-    it("should respond with status 200 and array of users", async () => {
-      await createUser();
-      const token = await generateValidToken();
-
-      const response = await server
-        .get("/user/all")
-        .set("Authorization", `Bearer ${token}`);
-
-      expect(response.status).toBe(httpStatus.OK);
-      expect(response.body).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: expect.any(Number),
-            name: expect.any(String),
-            pfp: expect.any(String),
-            createdAt: expect.any(String),
-            updatedAt: null,
-          }),
-        ])
-      );
     });
   });
 });

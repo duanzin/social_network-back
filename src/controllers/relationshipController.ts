@@ -34,7 +34,6 @@ async function getRelationship(
     );
     if (relationship)
       res.status(httpStatus.OK).send({ relationship: relationship.id });
-    console.log(relationship);
     res.status(httpStatus.OK).send({ relationship: null });
   } catch (error) {
     next(error);

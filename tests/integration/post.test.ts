@@ -32,6 +32,16 @@ describe("GET /post/:id?", () => {
   });
 
   describe("when token is valid", () => {
+    it("should respond with status 200 and empty array when no posts are found", async () => {
+      const token = await generateValidToken();
+
+      const response = await server
+        .get(`/post`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.OK);
+      expect(response.body).toEqual([]);
+    });
     it("should respond with status 200 and a post array when :id is undefined", async () => {
       const token = await generateValidToken();
 
@@ -59,6 +69,7 @@ describe("GET /post/:id?", () => {
         ])
       );
     });
+
     describe("when :id is defined", () => {
       it("should respond with status 400 when :id is not a number", async () => {
         const token = await generateValidToken();
@@ -77,6 +88,17 @@ describe("GET /post/:id?", () => {
           .set("Authorization", `Bearer ${token}`);
 
         expect(response.status).toBe(httpStatus.NOT_FOUND);
+      });
+      it("should respond with status 200 and empty array when no posts are found", async () => {
+        const user = await createUser();
+        const token = await generateValidToken();
+
+        const response = await server
+          .get(`/post/${user.id}`)
+          .set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(httpStatus.OK);
+        expect(response.body).toEqual([]);
       });
       it("should respond with status 200 and post array where all userId are equal to :id", async () => {
         const user = await createUser();
@@ -154,6 +176,18 @@ describe("GET /post/followed", () => {
           }),
         ])
       );
+    });
+    it("should respond with status 200 and empty array when no posts are found", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      await createRelationship(user.id);
+
+      const response = await server
+        .get("/post/followed")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.OK);
+      expect(response.body).toEqual([]);
     });
   });
 });
