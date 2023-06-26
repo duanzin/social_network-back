@@ -137,6 +137,28 @@ describe("signUpSchema", () => {
 
       expect(error).toBeDefined();
     });
+
+    it("should return error if name is all spaces", () => {
+      const input = generateValidInput();
+
+      const { error } = signInSchema.validate({
+        ...input,
+        name: "       ",
+      });
+
+      expect(error).toBeDefined();
+    });
+
+    it("should return error if name is over 20 characters", () => {
+      const input = generateValidInput();
+
+      const { error } = signInSchema.validate({
+        ...input,
+        name: faker.string.alphanumeric({ length: { min: 21, max: 30 } }),
+      });
+
+      expect(error).toBeDefined();
+    });
   });
 
   describe("when pfp is not valid", () => {
