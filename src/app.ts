@@ -1,6 +1,6 @@
 import express, { Express } from "express";
 import cors from "cors";
-import { loadEnv } from "config/envs";
+import { loadEnv } from "./config/envs";
 import { connectDb, disconnectDB } from "./config/database";
 import routes from "./routes/index";
 import { handleApplicationErrors } from "./middlewares/errorHandlingMiddleware";

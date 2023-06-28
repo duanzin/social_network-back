@@ -3,7 +3,7 @@ import * as jwt from "jsonwebtoken";
 import { duplicatedEmailError, invalidCredentialsError } from "../errors/index";
 import authRepository from "../repositories/authRepository";
 import { CreateUserParams, SigninParams } from "../protocols/authProtocols";
-import relationshipRepository from "repositories/relationshipRepository";
+import relationshipRepository from "../repositories/relationshipRepository";
 
 async function createUser(user: CreateUserParams) {
   const emailExists = await authRepository.findByEmail(user.email);

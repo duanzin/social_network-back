@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { badRequestError } from "errors";
+import { badRequestError } from "../errors/index";
 import { Schema } from "joi";
 
 export function validateSchema(schema: Schema) {
