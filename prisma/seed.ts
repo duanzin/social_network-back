@@ -39,7 +39,7 @@ async function seed() {
         },
       },
       take: 5,
-      skip: Math.floor(Math.random() * (userCount - 5)),
+      skip: Math.floor(Math.random() * Math.max(0, userCount - 5)),
     });
 
     for (const randomUser of users) {
