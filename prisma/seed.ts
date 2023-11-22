@@ -11,50 +11,71 @@ async function seed() {
     return;
   }
   const hashedPassword = await bcrypt.hash("123456789", 11);
-  for (let i = 0; i < 20; i++) {
-    const user = await prisma.users.create({
-      data: {
-        name: faker.internet.displayName(),
-        email: faker.internet.email(),
-        password: hashedPassword,
-        pfp: faker.internet.avatar(),
-      },
-    });
 
-    for (let j = 0; j < 10; j++) {
-      await prisma.posts.create({
-        data: {
-          content: faker.lorem.sentence(),
-          userId: user.id,
-        },
-      });
-    }
+  const usersData = Array.from({ length: 20 }, () => {
+    const userName = faker.internet.userName();
+    const slug = userName
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/--+/g, "-")
+      .trim();
 
-    const userCount = await prisma.users.count();
+    return {
+      name: faker.internet.displayName(),
+      userName,
+      email: faker.internet.email(),
+      slug,
+      password: hashedPassword,
+      pfp: faker.internet.avatar(),
+      banner: faker.image.urlLoremFlickr(),
+    };
+  });
 
-    const users = await prisma.users.findMany({
-      where: {
-        NOT: {
-          id: user.id,
-        },
-      },
-      take: 5,
-      skip: Math.floor(Math.random() * Math.max(0, userCount - 5)),
-    });
+  await prisma.users.createMany({ data: usersData });
+  const createdUsers = await prisma.users.findMany({
+    orderBy: {
+      id: "asc",
+    },
+    select: {
+      id: true,
+    },
+  });
 
-    for (const randomUser of users) {
+  await prisma.posts.createMany({
+    data: createdUsers.flatMap((user, index) =>
+      Array.from({ length: 10 }, () => ({
+        content: faker.lorem.sentence(),
+        userId: user.id,
+      }))
+    ),
+  });
+
+  function getRandomElements(array, numElements) {
+    const shuffled = array.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, numElements);
+  }
+
+  for (let i = 0; i < createdUsers.length; i++) {
+    const currentUser = createdUsers[i];
+    const otherUsers = createdUsers.filter(
+      (user) => user.id !== currentUser.id
+    );
+
+    const randomUsers = getRandomElements(otherUsers, 5);
+
+    for (const randomUser of randomUsers) {
       await prisma.relationships.create({
         data: {
-          followerId: user.id,
+          followerId: currentUser.id,
           followedId: randomUser.id,
         },
       });
     }
-
     await prisma.relationships.create({
       data: {
-        followerId: user.id,
-        followedId: user.id,
+        followerId: currentUser.id,
+        followedId: currentUser.id,
       },
     });
   }

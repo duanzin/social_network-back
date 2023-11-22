@@ -17,6 +17,26 @@ model relationships {
   users_relationships_followerIdTousers users     @relation("relationships_followerIdTousers", fields: [followerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
+model likes {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime? @db.Timestamp(6)
+  users     users    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  posts     posts    @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model retweets {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime? @db.Timestamp(6)
+  users     users    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  posts     posts    @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
 model posts {
   id        Int       @id @default(autoincrement())
   content   String    @db.VarChar
@@ -24,17 +44,24 @@ model posts {
   createdAt DateTime  @default(now()) @db.Timestamp(6)
   updatedAt DateTime? @db.Timestamp(6)
   users     users     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  likes    likes[]
+  retweets    retweets[]
 }
 
 model users {
   id                                            Int             @id @default(autoincrement())
   name                                          String          @db.VarChar
+  userName                                      String          @unique @db.VarChar
   email                                         String          @unique @db.VarChar
+  slug                                          String          @unique @db.VarChar
   password                                      String          @db.VarChar
   createdAt                                     DateTime        @default(now()) @db.Timestamp(6)
   updatedAt                                     DateTime?       @db.Timestamp(6)
   pfp                                           String          @default("https://pbs.twimg.com/media/FRynXImUcAAGFWk?format=png&name=360x360") @db.VarChar
+  banner                                        String          @default("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJwebMHlKXrA1Xig_Mk1EXRELjDMfD4LaVCA&usqp=CAU") @db.VarChar
   relationships_relationships_followedIdTousers relationships[] @relation("relationships_followedIdTousers")
   relationships_relationships_followerIdTousers relationships[] @relation("relationships_followerIdTousers")
   posts                                         posts[]
+  likes                                         likes[]
+  retweets                                      retweets[]
 }

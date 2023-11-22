@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 
+function sendErrorResponse(res: Response, status: number, message: string) {
+  return res.status(status).json({ message });
+}
+
 export function handleApplicationErrors(
   err: Error,
   req: Request,
@@ -8,37 +12,23 @@ export function handleApplicationErrors(
   next: NextFunction
 ) {
   if (err.name === "BadRequestError") {
-    return res.status(httpStatus.BAD_REQUEST).send({
-      message: err.message,
-    });
+    return sendErrorResponse(res, httpStatus.BAD_REQUEST, err.message);
   }
 
   if (err.name === "DuplicatedEmailError" || err.name === "ConflictError") {
-    return res.status(httpStatus.CONFLICT).send({
-      message: err.message,
-    });
+    return sendErrorResponse(res, httpStatus.CONFLICT, err.message);
   }
 
-  if (err.name === "InvalidCredentialsError") {
-    return res.status(httpStatus.UNAUTHORIZED).send({
-      message: err.message,
-    });
-  }
-
-  if (err.name === "UnauthorizedError") {
-    return res.status(httpStatus.UNAUTHORIZED).send({
-      message: err.message,
-    });
+  if (
+    err.name === "InvalidCredentialsError" ||
+    err.name === "UnauthorizedError"
+  ) {
+    return sendErrorResponse(res, httpStatus.UNAUTHORIZED, err.message);
   }
 
   if (err.name === "NotFoundError") {
-    return res.status(httpStatus.NOT_FOUND).send({
-      message: err.message,
-    });
+    return sendErrorResponse(res, httpStatus.NOT_FOUND, err.message);
   }
 
-  return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({
-    error: "InternalServerError",
-    message: err.message,
-  });
+  return sendErrorResponse(res, httpStatus.INTERNAL_SERVER_ERROR, err.message);
 }
