@@ -11,15 +11,31 @@ async function findByEmail(email: string) {
   return user;
 }
 
+async function findByUserName(userName: string) {
+  const user = await prisma.users.findUnique({
+    where: {
+      userName,
+    },
+  });
+
+  return user;
+}
+
 async function create(data: CreateUserParams) {
   const { id } = await prisma.users.create({
     data,
   });
 
-  return id;
+  await prisma.relationships.create({
+    data: {
+      followerId: id,
+      followedId: id,
+    },
+  });
 }
 
 export default {
   findByEmail,
+  findByUserName,
   create,
 };

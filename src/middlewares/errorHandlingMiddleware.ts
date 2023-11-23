@@ -15,7 +15,11 @@ export function handleApplicationErrors(
     return sendErrorResponse(res, httpStatus.BAD_REQUEST, err.message);
   }
 
-  if (err.name === "DuplicatedEmailError" || err.name === "ConflictError") {
+  if (
+    err.name === "DuplicatedEmailError" ||
+    err.name === "DuplicatedUserNameError" ||
+    err.name === "ConflictError"
+  ) {
     return sendErrorResponse(res, httpStatus.CONFLICT, err.message);
   }
 

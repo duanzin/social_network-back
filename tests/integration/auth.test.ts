@@ -32,6 +32,7 @@ describe("POST /auth/signup", () => {
       email: faker.internet.email(),
       password: faker.internet.password({ length: 6 }),
       name: faker.internet.displayName(),
+      userName: faker.internet.userName(),
       pfp: faker.internet.avatar(),
     });
 

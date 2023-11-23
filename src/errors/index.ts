@@ -26,6 +26,13 @@ export function duplicatedEmailError() {
   };
 }
 
+export function duplicatedUserNameError() {
+  return {
+    name: "DuplicatedUserNameError",
+    message: "This username already has an account",
+  };
+}
+
 export function unauthorizedError() {
   return {
     name: "UnauthorizedError",

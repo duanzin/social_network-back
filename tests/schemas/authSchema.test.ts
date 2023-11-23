@@ -63,6 +63,7 @@ describe("signUpSchema", () => {
     email: faker.internet.email(),
     password: faker.internet.password({ length: 6 }),
     name: faker.internet.displayName(),
+    userName: faker.internet.userName(),
     pfp: faker.internet.avatar(),
   });
 
@@ -149,12 +150,56 @@ describe("signUpSchema", () => {
       expect(error).toBeDefined();
     });
 
-    it("should return error if name is over 20 characters", () => {
+    it("should return error if name is over 40 characters", () => {
       const input = generateValidInput();
 
       const { error } = signInSchema.validate({
         ...input,
-        name: faker.string.alphanumeric({ length: { min: 21, max: 30 } }),
+        name: faker.string.alphanumeric({ length: { min: 41, max: 50 } }),
+      });
+
+      expect(error).toBeDefined();
+    });
+  });
+
+  describe("when username is not valid", () => {
+    it("should return error if username is not present", () => {
+      const input = generateValidInput();
+      delete input.userName;
+
+      const { error } = signUpSchema.validate(input);
+
+      expect(error).toBeDefined();
+    });
+
+    it("should return error if username is not a string", () => {
+      const input = generateValidInput();
+
+      const { error } = signInSchema.validate({
+        ...input,
+        userName: faker.number.int(),
+      });
+
+      expect(error).toBeDefined();
+    });
+
+    it("should return error if username is all spaces", () => {
+      const input = generateValidInput();
+
+      const { error } = signInSchema.validate({
+        ...input,
+        userName: "       ",
+      });
+
+      expect(error).toBeDefined();
+    });
+
+    it("should return error if username is over 20 characters", () => {
+      const input = generateValidInput();
+
+      const { error } = signInSchema.validate({
+        ...input,
+        userName: faker.string.alphanumeric({ length: { min: 21, max: 30 } }),
       });
 
       expect(error).toBeDefined();
