@@ -6,6 +6,6 @@ const userRouter = Router();
 
 userRouter.use(validateToken);
 userRouter.get("/all", userController.getAllUsers);
-userRouter.get("/:id?", userController.getUser);
+userRouter.get("/:slug?", userController.getUser);
 
 export default userRouter;

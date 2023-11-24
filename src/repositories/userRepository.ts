@@ -5,31 +5,45 @@ async function findById(userId: number) {
     where: {
       id: userId,
     },
+  });
+
+  return user;
+}
+
+async function findAllUsers(slug: string) {
+  const user = await prisma.users.findMany({
+    where: {
+      slug: {
+        not: slug,
+      },
+    },
     select: {
       id: true,
       name: true,
-      createdAt: true,
-      updatedAt: true,
+      userName: true,
       pfp: true,
+      banner: true,
+      slug: true,
+      createdAt: true,
     },
   });
 
   return user;
 }
 
-async function findAllUsers(userId: number) {
-  const user = await prisma.users.findMany({
+async function findBySlug(slug: string) {
+  const user = await prisma.users.findUnique({
     where: {
-      id: {
-        not: userId,
-      },
+      slug: slug,
     },
     select: {
       id: true,
       name: true,
-      createdAt: true,
-      updatedAt: true,
+      userName: true,
       pfp: true,
+      banner: true,
+      slug: true,
+      createdAt: true,
     },
   });
 
@@ -39,4 +53,5 @@ async function findAllUsers(userId: number) {
 export default {
   findById,
   findAllUsers,
+  findBySlug,
 };

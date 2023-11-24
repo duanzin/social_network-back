@@ -54,9 +54,11 @@ describe("GET /user/all", () => {
           expect.objectContaining({
             id: expect.any(Number),
             name: expect.any(String),
+            userName: expect.any(String),
             pfp: expect.any(String),
+            banner: expect.any(String),
             createdAt: expect.any(String),
-            updatedAt: null,
+            slug: expect.any(String),
           }),
         ])
       );
@@ -64,7 +66,7 @@ describe("GET /user/all", () => {
   });
 });
 
-describe("GET /user/:id?", () => {
+describe("GET /user/:slug?", () => {
   it("should respond with status 401 if no token is given", async () => {
     const response = await server.get("/user");
 
@@ -82,7 +84,7 @@ describe("GET /user/:id?", () => {
   });
 
   describe("when token is valid", () => {
-    it("should respond with status 200 and user with profileOwner as true when :id is undefined", async () => {
+    it("should respond with status 200 and user with profileOwner as true when :slug is undefined", async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
 
@@ -94,29 +96,22 @@ describe("GET /user/:id?", () => {
       expect(response.body).toEqual({
         id: user.id,
         name: user.name,
+        userName: user.userName,
         profileOwner: true,
         pfp: user.pfp,
+        banner: user.banner,
         followers: expect.any(Number),
         following: expect.any(Number),
         createdAt: user.createdAt.toISOString(),
-        updatedAt: user.updatedAt,
+        slug: user.slug,
       });
     });
-    describe("when :id is defined", () => {
-      it("should respond with status 400 when :id is not a number", async () => {
-        const token = await generateValidToken();
-
-        const response = await server
-          .get("/user/aaaa")
-          .set("Authorization", `Bearer ${token}`);
-
-        expect(response.status).toBe(httpStatus.BAD_REQUEST);
-      });
+    describe("when :slug is defined", () => {
       it("should respond with status 404 when user is not found", async () => {
         const token = await generateValidToken();
 
         const response = await server
-          .get("/user/999")
+          .get("/user/mmmmmmmm")
           .set("Authorization", `Bearer ${token}`);
 
         expect(response.status).toBe(httpStatus.NOT_FOUND);
@@ -126,19 +121,21 @@ describe("GET /user/:id?", () => {
         const token = await generateValidToken();
 
         const response = await server
-          .get(`/user/${user.id}`)
+          .get(`/user/${user.slug}`)
           .set("Authorization", `Bearer ${token}`);
 
         expect(response.status).toBe(httpStatus.OK);
         expect(response.body).toEqual({
           id: user.id,
           name: user.name,
+          userName: user.userName,
           profileOwner: false,
           pfp: user.pfp,
+          banner: user.banner,
           followers: expect.any(Number),
           following: expect.any(Number),
           createdAt: user.createdAt.toISOString(),
-          updatedAt: user.updatedAt,
+          slug: user.slug,
         });
       });
     });

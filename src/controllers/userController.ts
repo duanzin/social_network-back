@@ -6,15 +6,14 @@ import { badRequestError } from "../errors/index";
 
 async function getUser(req: Request, res: Response, next: NextFunction) {
   try {
-    if (req.params.id !== undefined && isNaN(parseInt(req.params.id)))
+    const slug: string = req.params.slug || res.locals.user;
+    if (typeof slug !== "string") {
       throw badRequestError();
+    }
 
-    const user: UserParams = await userService.getUser(
-      req.params.id !== undefined ? parseInt(req.params.id) : res.locals.user
-    );
+    const user: UserParams = await userService.getUser(slug);
 
-    if (!req.params.id || parseInt(req.params.id) === res.locals.user)
-      user.profileOwner = true;
+    user.profileOwner = !req.params.slug || slug === res.locals.user;
 
     res.status(httpStatus.OK).send(user);
   } catch (error) {
