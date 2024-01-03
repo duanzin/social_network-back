@@ -33,7 +33,7 @@ export async function validateToken(
     const user = await userRepository.findById(decoded.id);
     if (!user) throw unauthorizedError();
 
-    res.locals.user = user.slug;
+    res.locals.user = user.id;
     next();
   } catch (err) {
     next(err);

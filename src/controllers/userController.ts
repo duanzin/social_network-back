@@ -6,14 +6,13 @@ import { badRequestError } from "../errors/index";
 
 async function getUser(req: Request, res: Response, next: NextFunction) {
   try {
-    const slug: string = req.params.slug || res.locals.user;
-    if (typeof slug !== "string") {
+    const slugOrId: string = req.params.slug || res.locals.user;
+    if (req.params.slug && typeof slugOrId !== "string") {
       throw badRequestError();
     }
+    const user: UserParams = await userService.getUser(slugOrId);
 
-    const user: UserParams = await userService.getUser(slug);
-
-    user.profileOwner = !req.params.slug || slug === res.locals.user;
+    user.profileOwner = !req.params.slug || slugOrId === res.locals.user;
 
     res.status(httpStatus.OK).send(user);
   } catch (error) {

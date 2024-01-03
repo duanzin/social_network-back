@@ -3,8 +3,15 @@ import userRepository from "../repositories/userRepository";
 import { notFoundError } from "../errors/index";
 import { UserParams } from "../protocols/userProtocols";
 
-async function getUser(userSlug: string): Promise<UserParams> {
-  const user = await userRepository.findBySlug(userSlug);
+async function getUser(slugOrId: string | number): Promise<UserParams> {
+  let user;
+  if (typeof slugOrId === "number") {
+    const id: number = slugOrId;
+    user = await userRepository.findById(id);
+  } else {
+    const userSlug: string = slugOrId;
+    user = await userRepository.findBySlug(userSlug);
+  }
   if (!user) throw notFoundError();
 
   const { id, name, userName, pfp, banner, slug, createdAt } = user;
@@ -41,8 +48,8 @@ async function getUser(userSlug: string): Promise<UserParams> {
   return userWithRelationships;
 }
 
-async function getAllUsers(userSlug: string) {
-  return await userRepository.findAllUsers(userSlug);
+async function getAllUsers(userId: number) {
+  return await userRepository.findAllUsers(userId);
 }
 
 export default {
