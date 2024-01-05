@@ -40,8 +40,40 @@ async function createPost(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+async function likeOrUnlikePost(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    if (req.params.id === undefined || isNaN(parseInt(req.params.id))) {
+      throw badRequestError();
+    }
+    const postId: number = parseInt(req.params.id);
+    await postsService.likeOrUnlike(res.locals.user, postId);
+    res.sendStatus(httpStatus.OK);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function retweetPost(req: Request, res: Response, next: NextFunction) {
+  try {
+    if (req.params.id === undefined || isNaN(parseInt(req.params.id))) {
+      throw badRequestError();
+    }
+    const postId: number = parseInt(req.params.id);
+    await postsService.likeOrUnlike(res.locals.user, postId);
+    res.sendStatus(httpStatus.OK);
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   getPosts,
   getPostsFromFollowed,
   createPost,
+  likeOrUnlikePost,
+  retweetPost,
 };
