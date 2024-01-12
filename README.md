@@ -26,6 +26,8 @@ To start the code, run the following command
 ```
 npm run dev
 ```
+
+Remember to set up [front end](https://github.com/duanzin/social_network-front) if you want to use the full site.
 ## Running tests
 
 To run the tests, run the following command
