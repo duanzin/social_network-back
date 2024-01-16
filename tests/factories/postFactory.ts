@@ -8,10 +8,26 @@ export async function createPost(userId: number = null): Promise<posts> {
     const { id } = await createUser();
     userId = id;
   }
-  return prisma.posts.create({
+  const post = await prisma.posts.create({
     data: {
       userId: userId,
       content: faker.lorem.sentence(),
     },
   });
+
+  await prisma.likes.create({
+    data: {
+      userId: userId,
+      postId: post.id,
+    },
+  });
+
+  await prisma.retweets.create({
+    data: {
+      userId: userId,
+      postId: post.id,
+    },
+  });
+
+  return post;
 }

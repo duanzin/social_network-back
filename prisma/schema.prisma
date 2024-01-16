@@ -44,8 +44,8 @@ model posts {
   createdAt DateTime  @default(now()) @db.Timestamp(6)
   updatedAt DateTime? @db.Timestamp(6)
   users     users     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  likes    likes[]
-  retweets    retweets[]
+  likes     likes[]
+  retweets  retweets[]
 }
 
 model users {

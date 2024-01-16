@@ -50,7 +50,6 @@ describe("GET /post/:id?", () => {
       const response = await server
         .get("/post")
         .set("Authorization", `Bearer ${token}`);
-
       expect(response.status).toBe(httpStatus.OK);
       expect(response.body).toEqual(
         expect.arrayContaining([
@@ -65,6 +64,13 @@ describe("GET /post/:id?", () => {
               name: expect.any(String),
               pfp: expect.any(String),
             },
+            likes: expect.arrayContaining([
+              expect.objectContaining({
+                id: expect.any(Number),
+                userId: expect.any(Number),
+                postId: expect.any(Number),
+              }),
+            ]),
           }),
         ])
       );
@@ -123,6 +129,22 @@ describe("GET /post/:id?", () => {
                 name: user.name,
                 pfp: user.pfp,
               },
+              likes: expect.arrayContaining([
+                expect.objectContaining({
+                  id: expect.any(Number),
+                  userId: expect.any(Number),
+                  postId: expect.any(Number),
+                }),
+              ]),
+              retweets: expect.arrayContaining([
+                expect.objectContaining({
+                  id: expect.any(Number),
+                  userId: expect.any(Number),
+                  postId: expect.any(Number),
+                  createdAt: expect.any(String),
+                  updatedAt: null,
+                }),
+              ]),
             }),
           ])
         );
@@ -173,6 +195,22 @@ describe("GET /post/followed", () => {
               name: expect.any(String),
               pfp: expect.any(String),
             },
+            likes: expect.arrayContaining([
+              expect.objectContaining({
+                id: expect.any(Number),
+                userId: expect.any(Number),
+                postId: expect.any(Number),
+              }),
+            ]),
+            retweets: expect.arrayContaining([
+              expect.objectContaining({
+                id: expect.any(Number),
+                userId: expect.any(Number),
+                postId: expect.any(Number),
+                createdAt: expect.any(String),
+                updatedAt: null,
+              }),
+            ]),
           }),
         ])
       );
@@ -194,7 +232,7 @@ describe("GET /post/followed", () => {
 
 describe("POST /post", () => {
   it("should respond with status 401 if no token is given", async () => {
-    const response = await server.get("/post");
+    const response = await server.post("/post");
 
     expect(response.status).toBe(httpStatus.UNAUTHORIZED);
   });
@@ -203,7 +241,7 @@ describe("POST /post", () => {
     const token = faker.lorem.word();
 
     const response = await server
-      .get("/post")
+      .post("/post")
       .set("Authorization", `Bearer ${token}`);
 
     expect(response.status).toBe(httpStatus.UNAUTHORIZED);
@@ -263,6 +301,132 @@ describe("POST /post", () => {
           .set("Authorization", `Bearer ${token}`);
 
         expect(response.status).toBe(httpStatus.CREATED);
+      });
+    });
+  });
+});
+
+describe("POST /post/like/:id", () => {
+  it("should respond with status 401 if no token is given", async () => {
+    const response = await server.post("/post/like/111");
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if given token is not valid", async () => {
+    const token = faker.lorem.word();
+
+    const response = await server
+      .post("/post/like/111")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  describe("when token is valid", () => {
+    it("should respond with status 400 when :id is not a number", async () => {
+      const token = await generateValidToken();
+
+      const response = await server
+        .post("/post/like/aaa")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+    });
+
+    describe("when :id is defined", () => {
+      it("should respond with status 404 if post with given id doesnt exist", async () => {
+        const token = await generateValidToken();
+
+        const response = await server
+          .post("/post/like/909")
+          .set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(httpStatus.NOT_FOUND);
+      });
+      it("should respond with status 200 if a like with given post and user id doesnt exist yet", async () => {
+        const token = await generateValidToken();
+        const post = await createPost();
+
+        const response = await server
+          .post(`/post/like/${post.id}`)
+          .set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(httpStatus.OK);
+      });
+      it("should respond with status 200 if a like with given post and user id already exists", async () => {
+        const user = await createUser();
+        const token = await generateValidToken(user);
+        const post = await createPost(user.id);
+
+        const response = await server
+          .post(`/post/like/${post.id}`)
+          .set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(httpStatus.OK);
+      });
+    });
+  });
+});
+
+describe("POST /post/retweet/:id", () => {
+  it("should respond with status 401 if no token is given", async () => {
+    const response = await server.post("/post/retweet/909");
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if given token is not valid", async () => {
+    const token = faker.lorem.word();
+
+    const response = await server
+      .post("/post/retweet/909")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  describe("when token is valid", () => {
+    it("should respond with status 400 when :id is not a number", async () => {
+      const token = await generateValidToken();
+
+      const response = await server
+        .post("/post/retweet/aaa")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toBe(httpStatus.BAD_REQUEST);
+    });
+
+    describe("when :id is defined", () => {
+      it("should respond with status 404 if post with given id doesnt exist", async () => {
+        const token = await generateValidToken();
+
+        const response = await server
+          .post("/post/retweet/909")
+          .set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(httpStatus.NOT_FOUND);
+      });
+      it("should respond with status 200 if a retweet with given post and user id doesnt exist yet", async () => {
+        const token = await generateValidToken();
+        const post = await createPost();
+
+        const response = await server
+          .post(`/post/retweet/${post.id}`)
+          .set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(httpStatus.OK);
+      });
+      it("should respond with status 200 if a retweet with given post and user id already exists", async () => {
+        const user = await createUser();
+        const token = await generateValidToken(user);
+        const post = await createPost(user.id);
+
+        const response = await server
+          .post(`/post/retweet/${post.id}`)
+          .set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(httpStatus.OK);
       });
     });
   });

@@ -27,6 +27,8 @@ async function createPost(id: number, content: string) {
 }
 
 async function likeOrUnlike(userId: number, postId: number) {
+  const postExists = await postsRepository.getPostById(postId);
+  if(!postExists) throw notFoundError();
   const likeId: number | null = await likesRepository.findLike(userId, postId);
   if (likeId === null) {
     await likesRepository.like(userId, postId);
@@ -36,6 +38,8 @@ async function likeOrUnlike(userId: number, postId: number) {
 }
 
 async function retweet(userId: number, postId: number) {
+  const postExists = await postsRepository.getPostById(postId);
+  if(!postExists) throw notFoundError();
   const retweetId: number | null = await retweetRepository.findRetweet(
     userId,
     postId

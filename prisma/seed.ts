@@ -78,6 +78,24 @@ async function seed() {
         followedId: currentUser.id,
       },
     });
+    const allPosts = await prisma.posts.findMany();
+    const randomPosts = getRandomElements(allPosts, 5);
+
+    for (const post of randomPosts) {
+      await prisma.likes.create({
+        data: {
+          userId: currentUser.id,
+          postId: post.id,
+        },
+      });
+
+      await prisma.retweets.create({
+        data: {
+          userId: currentUser.id,
+          postId: post.id,
+        },
+      });
+    }
   }
 }
 

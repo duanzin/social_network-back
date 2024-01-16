@@ -13,6 +13,13 @@ async function getAll() {
           name: true,
         },
       },
+      likes: {
+        select: {
+          id: true,
+          userId: true,
+          postId: true,
+        },
+      },
     },
   });
 }
@@ -20,7 +27,18 @@ async function getAll() {
 async function getFromUser(id: number) {
   return await prisma.posts.findMany({
     where: {
-      userId: id,
+      OR: [
+        {
+          userId: id,
+        },
+        {
+          retweets: {
+            some: {
+              userId: id,
+            },
+          },
+        },
+      ],
     },
     orderBy: {
       createdAt: "desc",
@@ -33,6 +51,14 @@ async function getFromUser(id: number) {
           name: true,
         },
       },
+      likes: {
+        select: {
+          id: true,
+          userId: true,
+          postId: true,
+        },
+      },
+      retweets: true,
     },
   });
 }
@@ -40,9 +66,22 @@ async function getFromUser(id: number) {
 async function getFromFollowed(following: number[]) {
   return await prisma.posts.findMany({
     where: {
-      userId: {
-        in: following,
-      },
+      OR: [
+        {
+          userId: {
+            in: following,
+          },
+        },
+        {
+          retweets: {
+            some: {
+              userId: {
+                in: following,
+              },
+            },
+          },
+        },
+      ],
     },
     orderBy: {
       createdAt: "desc",
@@ -55,6 +94,14 @@ async function getFromFollowed(following: number[]) {
           name: true,
         },
       },
+      likes: {
+        select: {
+          id: true,
+          userId: true,
+          postId: true,
+        },
+      },
+      retweets: true,
     },
   });
 }
@@ -68,9 +115,37 @@ async function create(id: number, content: string) {
   });
 }
 
+async function getPostById(postId: number) {
+  const post = await prisma.posts.findUnique({
+    where: {
+      id: postId,
+    },
+    include: {
+      users: {
+        select: {
+          id: true,
+          pfp: true,
+          name: true,
+        },
+      },
+      likes: {
+        select: {
+          id: true,
+          userId: true,
+          postId: true,
+        },
+      },
+      retweets: true,
+    },
+  });
+
+  return post;
+}
+
 export default {
   getAll,
   getFromUser,
   getFromFollowed,
   create,
+  getPostById
 };
