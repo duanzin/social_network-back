@@ -22,7 +22,7 @@
   },
   "author": "Lucas Duan Rodrigues",
   "prisma": {
-    "seed": "npm run dev:load-envs -- ts-node prisma/seed.ts"
+    "seed": "dotenv -e .env.development tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.8.1",
