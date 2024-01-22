@@ -204,6 +204,17 @@ describe("signUpSchema", () => {
 
       expect(error).toBeDefined();
     });
+
+    it("should return error if username is under 4 characters", () => {
+      const input = generateValidInput();
+
+      const { error } = signInSchema.validate({
+        ...input,
+        userName: faker.string.alphanumeric({ length: { min: 1, max: 3 } }),
+      });
+
+      expect(error).toBeDefined();
+    });
   });
 
   describe("when pfp is not valid", () => {
