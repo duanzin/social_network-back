@@ -97,6 +97,7 @@ async function seed() {
       });
     }
   }
+  console.log("Seed successful :)");
 }
 
 seed()

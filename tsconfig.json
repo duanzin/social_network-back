@@ -2,8 +2,8 @@
   "compilerOptions": {
     "outDir": "dist",
     "esModuleInterop": true,
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "module": "commonJS",
+    "moduleResolution": "node",
     "rootDirs": ["src", "tests"],
     "baseUrl": "src"
   },
