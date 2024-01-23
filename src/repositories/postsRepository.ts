@@ -11,6 +11,7 @@ async function getAll() {
           id: true,
           pfp: true,
           name: true,
+          slug: true,
         },
       },
       likes: {
@@ -147,5 +148,5 @@ export default {
   getFromUser,
   getFromFollowed,
   create,
-  getPostById
+  getPostById,
 };
