@@ -50,6 +50,7 @@ async function getFromUser(id: number) {
           id: true,
           pfp: true,
           name: true,
+          slug: true,
         },
       },
       likes: {
@@ -93,6 +94,7 @@ async function getFromFollowed(following: number[]) {
           id: true,
           pfp: true,
           name: true,
+          slug: true,
         },
       },
       likes: {
@@ -127,6 +129,7 @@ async function getPostById(postId: number) {
           id: true,
           pfp: true,
           name: true,
+          slug: true,
         },
       },
       likes: {
